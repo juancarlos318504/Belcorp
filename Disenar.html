@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Diseñar</title>
+
+    <style>
+        .container{
+            height: 100%;
+            width: 100%;
+            background-color: white;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-around;
+            align-items: center;
+        }
+
+        h2 {
+            text-align: center;
+            font-size: 20px;
+            font-weight: 600;
+            text-transform: uppercase;
+            display:inline-block;
+            margin: 30px 8px 20px 8px; 
+            color: #6b6b6b;
+        }
+        h3 {
+            text-align: center;
+            font-size: 18px;
+            font-weight: 400;
+            display:inline-block;
+            margin: 3rem 1rem; 
+            color: #6b6b6b;
+        }
+
+        .color-container{
+            width: 100%;
+            height: 30vh;
+            display: flex;
+            justify-content: center;
+            margin-bottom: 2rem;
+            align-items: flex-start;
+        }
+
+        .result {
+            width: 5em;
+            height: 5em;
+            border-radius: 30%;
+            box-shadow: 0 2px 6px #000;
+            background: #95C066;
+            display: inline-block;
+            vertical-align: middle;
+            margin-left: 2em;
+            justify-self: flex-end;
+        }
+
+        input[type=button], input[type=submit], input[type=reset]  {
+            background-color: #56baed;
+            border: none;
+            color: white;
+            padding: 15px 80px;
+            text-align: center;
+            text-decoration: none;
+            display: inline-block;
+            text-transform: uppercase;
+            font-size: 13px;
+            -webkit-box-shadow: 0 10px 30px 0 rgba(95,186,233,0.4);
+            box-shadow: 0 10px 30px 0 rgba(95,186,233,0.4);
+            -webkit-border-radius: 5px 5px 5px 5px;
+            border-radius: 5px 5px 5px 5px;
+            margin: 5px 20px 40px 20px;
+            -webkit-transition: all 0.3s ease-in-out;
+            -moz-transition: all 0.3s ease-in-out;
+            -ms-transition: all 0.3s ease-in-out;
+            -o-transition: all 0.3s ease-in-out;
+            transition: all 0.3s ease-in-out;
+        }
+
+        input[type=button]:hover, input[type=submit]:hover, input[type=reset]:hover  {
+            background-color: #3e95c6;
+        }
+
+        input[type=button]:active, input[type=submit]:active, input[type=reset]:active  {
+            -moz-transform: scale(0.95);
+            -webkit-transform: scale(0.95);
+            -o-transform: scale(0.95);
+            -ms-transform: scale(0.95);
+            transform: scale(0.95);
+        }
+
+        
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h2>Diseñar</h2>
+
+        <h3>Selecciona tu color favorito</h3>
+        <div class="color-container">
+            <input type="color" id="color-picker" />
+            <span class="result" id="result"></span>
+        </div>
+        <br>
+        <input type="submit" id="submit-button" class="fadeIn fourth" value="Pruébalo">
+    </div>
+</body>
+
+<script>
+    const colorInput = document.getElementById("color-picker");
+    const result = document.getElementById("result");
+    result.style.backgroundColor = colorInput.value;
+
+    document.getElementById("submit-button").addEventListener('click', ()=>window.location.href = "/Belcorp/Probar.html");
+
+    colorInput.addEventListener('input', ()=>{
+        result.style.backgroundColor = colorInput.value;
+    })
+</script>
+</html>

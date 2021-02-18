@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <link rel="stylesheet" href="Login.css">
+    
+    <title>Registro</title>
+</head>
+<body>
+    <div class="wrapper fadeInDown">
+        <div id="formContent">
+            <!-- Tabs Titles -->
+
+            <!-- Icon -->
+            <div class="fadeIn first">
+                <!--<img src="http://danielzawadzki.com/codepen/01/icon.svg" id="icon" alt="User Icon" />-->
+                <h2>Universo Belcorp</h2>
+            </div>
+
+            <!-- Login Form -->
+            <form id="register-form">
+                <p>Nombre</p>
+                <input type="text" id="login" class="fadeIn second" name="name" placeholder="Ingrese su nombre" required>
+                <p>Apellido</p>
+                <input type="text" id="last-name" class="fadeIn third" name="last-name" placeholder="Ingrese su apellido" required>
+                <p>Fecha de Nacimiento</p>
+                <input type="date" id="born-date" class="fadeIn third" name="born-date" placeholder="Fecha de nacimiento" required>
+                <p>Hobbies</p>
+                <textarea rows = "2" cols = "2" class="fadeIn third" name = "description" placeholder="Haga una lista de sus hobbies"> haga una lista de sus hobiies</textarea>
+                <p>Estilo de vida</p>
+                <input type="text" id="life-style" class="fadeIn third" name="life-style" placeholder="Estilo de vida" required>
+                
+                <input type="submit" class="fadeIn fourth" value="Registrarse">
+
+            </form>
+
+        </div>
+    </div>
+
+    <script>
+        function loginSubmit(event) {
+            event.preventDefault();
+            console.log("Registrando...");
+        }
+
+        const form = document.getElementById('register-form');
+        form.addEventListener('submit', loginSubmit);
+
+    </script>
+</body>
+</html>

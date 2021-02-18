@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Probar</title>
+
+    <style>
+        .container{
+            height: 100%;
+            width: 100%;
+            background-color: white;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-around;
+            align-items: center;
+        }
+
+        h2 {
+            text-align: center;
+            font-size: 20px;
+            font-weight: 600;
+            text-transform: uppercase;
+            display:inline-block;
+            margin: 30px 8px 20px 8px; 
+            color: #6b6b6b;
+        }
+
+        .home-container{
+            height: 50vh;
+            width: 100%;
+            margin-top: 1.5rem;
+            z-index: 0;
+            display: flex;
+            border-radius: 5px;
+            overflow: hidden;
+        }
+
+        .home-card{
+            height: 100%;
+            width: 33.33%;
+            border: 1px solid white;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .home-card a {
+            color: white;
+            display:inline-block;
+            text-decoration: none;
+            font-weight: bolder;
+            position: absolute;
+            font-size: larger;
+            text-shadow: 3px 3px 2px black;
+        }
+
+        .underlineHover:after {
+            display: block;
+            left: 0;
+            bottom: -10px;
+            width: 0;
+            height: 2px;
+            background-color: white;
+            content: "";
+            transition: width 0.2s;
+        }
+
+        .underlineHover:hover {
+            color: white;
+        }
+
+        .underlineHover:hover:after{
+            width: 100%;
+        }
+
+        .home-card img{
+            height: 100%;
+            width: 100%;
+            object-fit: cover;
+        }
+
+    </style>
+</head>
+<body>
+    <div class="container">
+        <H2>Probar</H2>
+        <div class="home-container">
+            <div class="home-card">
+                <a class="underlineHover" href="face/Probar-Maquillaje.html" style="margin-left: 1em; margin-right: 1em;">Maquillaje</a>
+                <img src="http://www.motor.com.co/files/article_multimedia/uploads/2019/02/11/5c61cd8a07bfb.jpeg">
+            </div>
+            
+            <div class="home-card">
+                <a class="underlineHover" href="hands/Probar-Esmalte.html" style="margin-left: 1em; margin-right: 1em;">Esmalte</a>
+                <img src="https://revistaliterariamonolito.com/wp-content/uploads/2019/06/El-carro-de-don-Roberto-770x427.jpg">
+            </div>
+
+            <div class="home-card">
+                <a class="underlineHover" href="#" style="margin-left: 1em; margin-right: 1em;">Cabello</a>
+                <img src="http://www.motor.com.co/files/article_multimedia/uploads/2019/02/11/5c61cd8a07bfb.jpeg">
+            </div>
+        </div>
+    </div>
+</body>
+</html>

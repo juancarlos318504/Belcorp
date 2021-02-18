@@ -1,0 +1,416 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <script src="https://cdn.jsdelivr.net/npm/@mediapipe/camera_utils/camera_utils.js" crossorigin="anonymous"></script>
+  <!--<script src="https://cdn.jsdelivr.net/npm/@mediapipe/control_utils/control_utils.js" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@mediapipe/drawing_utils/drawing_utils.js" crossorigin="anonymous"></script>-->
+  <script src="https://handsfree.js.org/handsfreejs/@mediapipe/hands/hands.js" crossorigin="anonymous"></script>
+  <!--<script src="https://cdn.jsdelivr.net/npm/@mediapipe/hands/hands.js" crossorigin="anonymous"></script>
+      <script src="https://handsfree.js.org/handsfreejs/@mediapipe/hands/hands_solution_wasm_bin.js" crossorigin="anonymous"></script>-->
+
+  <style>
+
+    body{
+        margin: 0;
+    }
+
+    #loading{
+        background-color: white;
+        color: gray;
+        font-size: 3em;
+        font-weight: bolder;
+        text-align: center;
+        height: 100%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        z-index: 100;
+
+        mix-blend-mode: screen;
+        z-index: 100;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    #loading-logo{
+        max-width: 60%;
+    }
+
+    #input_video{
+        transform: rotateY(180deg);
+        -webkit-transform:rotateY(180deg); /* Safari and Chrome */
+        -moz-transform:rotateY(180deg); /* Firefox */
+    }
+
+    .panel-video{
+        /*width: 100%;
+        position: absolute;*/
+        width: 100vw ;
+        height: 100vh !important;
+        object-fit: cover;
+        position: absolute;
+    }
+    
+
+    #view-panel{
+       z-index: 50;
+    }
+
+    .slider {
+        -webkit-appearance: none;
+        width: 80%;
+        height: 15px;
+        border-radius: 5px;  
+        background: #8A9CC0;
+        outline: none;
+        
+        -webkit-transition: .2s;
+        transition: opacity .2s;
+    }
+
+    .slider::-webkit-slider-thumb {
+        -webkit-appearance: none;
+        appearance: none;
+        width: 25px;
+        height: 25px;
+        border-radius: 50%; 
+        background: #192026;
+        cursor: pointer;
+    }
+
+    .slider::-moz-range-thumb {
+        width: 25px;
+        height: 25px;
+        border-radius: 50%;
+        background: #192026;
+        cursor: pointer;
+    }
+
+    #zoom-container{
+        height: 90%;
+        display: flex;
+        align-items: flex-end;
+        justify-content: center;
+        flex-direction: column;
+        padding: 0;
+    }
+
+    #rotation-container{
+        height: 10%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 0;
+    }
+
+    #sliderZoom
+    {
+        width: 40vh;
+        transform-origin: 50% 50%;
+        transform: rotate(-90deg);
+        margin-right: -15vh;
+    }
+    
+    .finger-buttons-container{
+        display: flex;
+        justify-content: flex-end;
+        align-items: flex-end;
+        flex-direction: column;
+        height: 50%;
+    }
+
+    .Fingerbutton {
+        width: 3em;
+        text-align: left;
+        margin-top: 0.8em;
+        background-color: rgba(138, 156, 192, 0.3);
+        border: 2px solid #40495A;
+        padding:0 15px;
+        line-height:36px;
+        float:left;
+        color: #40495A;
+        font-weight:600;
+        cursor:pointer;
+    }
+
+    .FingerbuttonSelected {
+        width: 3.5em;
+        text-align: left;
+        margin-top: 0.8em;
+        background-color: #40495A;
+        border: 2px solid white;
+        padding:0 15px;
+        line-height:36px;
+        float:left;
+        color: white;
+        font-weight:600;
+        cursor:pointer;
+    }
+
+  </style>
+</head>
+
+<body>
+  <div class="container">
+    <video id="input_video" class="panel-video"></video>
+    <canvas id="output_canvas" class="panel-video" width="1280px" height="720px"></canvas>
+    
+    <canvas id="output_canvas3D" class="panel-video" width="1280px" height="720px"></canvas>
+
+    <div id="view-panel" class="panel-video">
+        
+        <div id="zoom-container">
+            <input type="range" min="0" max="200" value="100" class="slider" id="sliderZoom">
+
+            <div class="finger-buttons-container">
+                <div  class="Fingerbutton" Fingerpoint1=5 Fingerpoint2=6>Índice</div>
+                <div  class="Fingerbutton" Fingerpoint1=9 Fingerpoint2=10>Medio</div>
+                <div  class="Fingerbutton" Fingerpoint1=13 Fingerpoint2=14>Anular</div>
+                <div  class="Fingerbutton" Fingerpoint1=17 Fingerpoint2=18 >Meñique</div>
+            </div>
+            
+        </div>
+        
+        <div id="rotation-container">
+            <input type="range" min="-180" max="180" value="0" class="slider" id="sliderRotation">
+        </div>
+        
+    </div>
+
+    <div id="loading" class="panel-video">
+        Cargando datos...
+    </div>
+
+  </div>
+
+
+</body>
+
+<script src="https://threejs.org/build/three.js"></script>
+<script src="https://unpkg.com/three/examples/js/loaders/GLTFLoader.js"></script>
+<script src="https://code.jquery.com/jquery-3.5.0.js"></script>
+<script type="module">
+    const videoElement = document.getElementById('input_video');
+    const canvasElement = document.getElementById('output_canvas');
+    const canvasCtx = canvasElement.getContext('2d');
+    const canvasElement3D = document.getElementById("output_canvas3D");
+    
+    var sliderRotationValue = 0;
+    const sliderRotation = document.getElementById("sliderRotation");
+    sliderRotation.oninput = function() {
+        sliderRotationValue = this.value;
+        //console.log(sliderValue);
+    }
+
+    var sliderZoomValue = 100;
+    const sliderZoom = document.getElementById("sliderZoom");
+    sliderZoom.oninput = function() {
+        sliderZoomValue = this.value;
+        //console.log(sliderValue);
+    }
+
+    
+    const camera = new Camera(videoElement, {
+        onFrame: async () => {
+            await hands.send({image: videoElement});
+            //console.log(camera.video.clientWidth + " - "+camera.video.clientHeight);
+            //canvasElement.height = camera.video.clientWidth; //offsetHeight
+        },
+        width: 1280,
+        height: 720
+    });
+    camera.start();
+    console.log(camera);
+    //var p = document.createElement("p");
+    //p.innerHTML = camera.video.offsetHeight + " - " + camera.video.offsetWidth;
+    //document.getElementById("view-panel").appendChild(p);
+    
+    canvasElement.width = window.innerWidth; //offsetWidth
+    canvasElement.height = window.innerHeight; //offsetHeight
+    canvasElement3D.width = window.innerWidth;
+    canvasElement3D.height = window.innerHeight;
+    //videoElement.width = window.innerWidth;
+    //videoElement.height = window.innerHeight;
+
+    console.log(camera.video.clientWidth + " - " + camera.video.clientHeight);
+    console.log(videoElement.width + " - " + videoElement.height);
+    console.log(window.innerWidth + " - " + window.innerHeight);
+    var aspectRatio = camera.video.offsetWidth / camera.video.offsetHeight;
+    //canvasElement.width = videoElement.clientWidth;
+    //canvasElement3D.style.paddingLeft = aspectRatio*10 +"%"
+
+    var Fingerpoint1 = 5;
+    var Fingerpoint2 = 6;
+
+    var FingerButtons = document.getElementsByClassName("Fingerbutton");
+    for (var i = 0; i < FingerButtons.length; i++) {
+        FingerButtons[i].addEventListener('click', function() {
+            Fingerpoint1 = this.getAttribute("Fingerpoint1");
+            Fingerpoint2 = this.getAttribute("Fingerpoint2");
+
+            for (var j = 0; j < FingerButtons.length; j++) {
+                //FingerButtons[j].className = "Fingerbutton";
+                FingerButtons[j].classList.add('Fingerbutton');
+                FingerButtons[j].classList.remove('FingerbuttonSelected');
+            }
+            this.classList.add('FingerbuttonSelected');
+
+        }, false);
+    }
+    FingerButtons[0].click();
+
+    //Escena 3D/////////////////////////////////////////////////////////////////////////////////////////////////
+    const scene = new THREE.Scene();
+    const cameraThree = new THREE.PerspectiveCamera( 60, window.innerWidth / window.innerHeight, 0.01, 1000 );
+    cameraThree.position.z = 320;
+    //const renderer = new THREE.WebGLRenderer();
+    const renderer = new THREE.WebGLRenderer({
+        canvas: canvasElement3D,
+        antialias: true,
+        alpha: true 
+    });
+    //renderer.setClearColor( 0x000000, 0.4 ); 
+    //renderer.setSize( window.innerWidth, window.innerHeight );
+    document.body.appendChild( renderer.domElement );
+
+
+    /*Iluminación ////////////////////////////////////////////////////////////////////////// */
+
+    var light = new THREE.PointLight( 0xffffcc, 20, 200 );
+    light.position.set( 4, 30, -20 );
+    scene.add( light );
+
+    var light2 = new THREE.AmbientLight( 0x20202A, 20, 100 );
+    light2.position.set( 30, -10, 30 );
+    scene.add( light2 );
+    /* ////////////////////////////////////////////////////////////////////////// */
+
+    /*Modelo 3D ////////////////////////////////////////////////////////////////////////// */
+    /*var jewelModel;
+    var loader = new THREE.GLTFLoader();
+    loader.crossOrigin = true;
+    loader.load( 'Anilloformastriangulo.glb', function ( data ) {
+        var object = data.scene;
+        object.renderOrder = 3;
+        jewelModel = object;
+        scene.add(jewelModel);
+    //, onProgress, onError );
+    });*/
+
+    var ship_material = new THREE.MeshBasicMaterial( { color: 0x444444 } );
+
+    var jewelModel;
+    var loader2 = new THREE.GLTFLoader();
+    loader2.crossOrigin = true;
+    loader2.load( 'Nail5.glb', function ( data ) {
+
+        var object = data.scene;
+        object.scale.set(10,10,10);
+        object.position.set(0,0,0);
+        object.rotation.set(0, 0 ,  90 * (Math.PI/180));
+        jewelModel = object;
+        scene.add(jewelModel);
+
+    //, onProgress, onError );
+    });
+    
+    var newMaterial = new THREE.MeshStandardMaterial({color: 0xff0000});
+    jewelModel.traverse((o) => {
+    if (o.isMesh) o.material = newMaterial;
+    });
+    /*Modelo 3D ////////////////////////////////////////////////////////////////////////// */
+
+    function animate() {
+        requestAnimationFrame( animate );
+        renderer.render( scene, cameraThree );
+    }
+
+    animate();
+
+    const fov = cameraThree.fov;
+    const fovH = 2 * Math.atan( Math.tan( fov * Math.PI / 180 / 2 ) * cameraThree.aspect ) * 180 / Math.PI; // degrees
+    var cameraLimitY = Math.tan(fov/2 * Math.PI / 180) * cameraThree.position.z;
+    var cameraLimitX = Math.tan(fovH/2 * Math.PI / 180) * cameraThree.position.z;
+    function screenTo3D(x , y){ 
+        const x_3D = scale(x, 0, 1, -cameraLimitX, cameraLimitX);
+        const y_3D = scale(y, 0, 1, -cameraLimitY, cameraLimitY);
+
+        return new THREE.Vector3(x_3D, y_3D,0);
+    }
+
+    const scale = (num, in_min, in_max, out_min, out_max) => {
+        return (num - in_min) * (out_max - out_min) / (in_max - in_min) + out_min;
+    }
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////////        
+
+
+    const hands = new Hands({locateFile: (file) => {
+        return `https://cdn.jsdelivr.net/npm/@mediapipe/hands/${file}`;
+    }});
+
+    hands.setOptions({
+        selfieMode: true,
+        maxNumHands: 1,
+        minDetectionConfidence: 0.8,
+        minTrackingConfidence: 0.7
+    });
+    hands.onResults(onResults);
+    console.log(camera);
+    function onResults(results) {
+        /*canvasElement.width = camera.video.clientWidth;
+        canvasElement.height= camera.video.clientHeight;
+        canvasElement3D.width = camera.video.clientWidth;
+        canvasElement3D.height= camera.video.clientHeight;
+        cameraThree.aspect = camera.video.clientWidth / camera.video.clientHeight;*/
+        
+        document.getElementById("loading").style.display = 'none'; //Oculta el menú de carga
+        /*canvasCtx.save();
+        canvasCtx.clearRect(0, 0, canvasElement.width, canvasElement.height);
+        /*canvasCtx.drawImage(
+            results.image, 0, 0, canvasElement.width, canvasElement.height);*/
+
+        if (results.multiHandLandmarks && results.multiHandedness) {
+            jewelModel.visible = true;
+
+            var point1 = screenTo3D(results.multiHandLandmarks[0][8].x , results.multiHandLandmarks[0][8].y)
+            var point2 = screenTo3D(results.multiHandLandmarks[0][7].x , results.multiHandLandmarks[0][7].y)
+
+            //Posicion***************************************************************************************************
+            jewelModel.position.set(point1.x, -point1.y,0)
+            //Posicion***************************************************************************************************
+
+            //Rotacion***************************************************************************************************            
+            jewelModel.lookAt(point2.x, -point2.y , point2.z);
+            //console.log(jewelModel.rotation.y)
+            var rotationz = jewelModel.rotation.y < 0 ? Math.PI : 0;
+            jewelModel.rotation.set(jewelModel.rotation.x , jewelModel.rotation.y , jewelModel.rotation.z + rotationz + (sliderRotationValue * (Math.PI/180)));
+            //Rotacion***************************************************************************************************
+
+            //Escala***************************************************************************************************            
+            var scale = point1.distanceTo ( point2 ) *(sliderZoomValue/100);
+            //Finger.scale.set(scale/2, scale/2 ,scale*2);
+            jewelModel.scale.set((scale/5) ,(scale/5),(scale/5));
+            //Escala***************************************************************************************************
+
+
+            /*for (const landmarks of results.multiHandLandmarks) {
+            drawConnectors(canvasCtx, landmarks, HAND_CONNECTIONS,
+                            {color: '#00FF00', lineWidth: 5});
+            drawLandmarks(canvasCtx, landmarks, {color: '#FF0000', lineWidth: 2});
+            }*/
+        }
+        else{
+            jewelModel.visible = false;
+        }
+
+        canvasCtx.restore();
+    }
+    
+    
+
+</script>
+
+   
+</html>

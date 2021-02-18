@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <link rel="stylesheet" href="Login.css">
+    
+    <title>Ingreso</title>
+</head>
+<body>
+    <div class="wrapper fadeInDown">
+        <div id="formContent">
+            <!-- Tabs Titles -->
+
+            <!-- Icon -->
+            <div class="fadeIn first">
+                <!--<img src="http://danielzawadzki.com/codepen/01/icon.svg" id="icon" alt="User Icon" />-->
+                <h2>Universo Belcorp</h2>
+                <img src="./images/Logo.jpeg" style="width: 60%;">
+            </div>
+
+            <!-- Login Form -->
+            <form id="login-form">
+                <input type="text" id="login" class="fadeIn second" name="login" placeholder="Usuario" required>
+                <input type="text" id="password" class="fadeIn third" name="login" placeholder="Contraseña" required>
+                <input type="submit" class="fadeIn fourth" value="Ingresar">
+            </form>
+
+            <!-- Remind Passowrd -->
+            <div id="formFooter">
+                <a class="underlineHover" href="face/Probar-Maquillaje.html">Reconocimiento facial</a>
+                <br>
+                <a class="underlineHover" href="/Registro.html">Crear cuenta</a>
+                <pre></pre>
+                <div style="width: 100%; display: flex; justify-content: center; text-align: center;">
+                    <a class="underlineHover" href="#" style="margin-left: 1em; margin-right: 1em;">Ésika</a>
+                    <a class="underlineHover" href="#" style="margin-left: 1em; margin-right: 1em;">L´Bel</a>
+                    <a class="underlineHover" href="#" style="margin-left: 1em; margin-right: 1em;">Cyzone</a></div>
+                
+            </div>
+
+        </div>
+    </div>
+
+    <script>
+        const userInput = document.getElementById("login");
+        const passwordInput = document.getElementById("password");
+
+        function loginSubmit(event) {
+            event.preventDefault();
+            console.log("Logueando...");
+
+            if(userInput.value == "kaleidolab" && passwordInput.value == "kaleido2021"){
+                window.location.href = "/Belcorp/Inicio.html";
+            }
+            else{
+                alert("Lo sentimos, el usuario y la contraseña no coinciden");
+            }
+            
+        }
+
+        const form = document.getElementById('login-form');
+        form.addEventListener('submit', loginSubmit);
+
+    </script>
+</body>
+</html>
